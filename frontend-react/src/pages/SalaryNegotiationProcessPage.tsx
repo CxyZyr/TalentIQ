@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ChevronRight, Loader2, Maximize2, Minimize2, X, CheckCircle, Upload, Eye } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
+import { useToast } from '../components/ui/toast';
 import {
   getCandidateCompleteInfo,
   updateCandidateResume,
@@ -229,20 +230,10 @@ const SalaryNegotiationProcessPage = () => {
   const [uploadedFileName, setUploadedFileName] = useState('');
 
   // Toast 通知状态
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: 'success' | 'error' | 'warning' }>({
-    show: false,
-    message: '',
-    type: 'success',
-  });
+  const { showToast } = useToast();
 
   // 确认对话框状态
   const [confirmDialog, setConfirmDialog] = useState(false);
-
-  // Toast 显示辅助函数
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 3000);
-  };
 
   // 权限判断
   const canViewPrivacy = user?.role === 'HR' || user?.role === 'CEO';
@@ -1616,21 +1607,6 @@ const SalaryNegotiationProcessPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Toast 通知 */}
-      {toast.show && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in-0 slide-in-from-top-2 duration-300">
-          <div className={`px-4 py-2.5 rounded-lg shadow-lg border text-sm font-medium flex items-center gap-2 ${
-            toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
-            toast.type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
-            'bg-amber-50 border-amber-200 text-amber-800'
-          }`}>
-            {toast.type === 'success' && <CheckCircle className="w-4 h-4" />}
-            {toast.type === 'error' && <X className="w-4 h-4" />}
-            {toast.type === 'warning' && <Upload className="w-4 h-4" />}
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

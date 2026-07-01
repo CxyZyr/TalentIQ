@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, ChevronRight, CheckCircle, Loader2, Maximize2, Minimize2, X } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
+import { useToast } from '../components/ui/toast';
 import {
   getCandidateCompleteInfo,
   updateCandidateResume,
@@ -177,11 +178,7 @@ const ResumeScreeningDetailPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
   // Toast 通知
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   // 确认提交弹窗
   const [confirmDialog, setConfirmDialog] = useState(false);
@@ -1482,16 +1479,6 @@ const ResumeScreeningDetailPage = () => {
       </Dialog>
 
       {/* Toast 通知 */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-600' :
-            toast.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

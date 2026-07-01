@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { useRecorderStore } from '../stores/recorderStore';
+import { useToast } from '../components/ui/toast';
 import {
   getRecordingList,
   getRecordingDetail,
@@ -59,11 +60,7 @@ export function InterviewRoomPage() {
   const stage = searchParams.get('stage') || '一面';
 
   // Toast
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   // 候选人信息
   const [candidateInfo, setCandidateInfo] = useState<Candidate | null>(null);
@@ -1162,16 +1159,6 @@ export function InterviewRoomPage() {
       </Dialog>
 
       {/* Toast 通知 */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-600' :
-            toast.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

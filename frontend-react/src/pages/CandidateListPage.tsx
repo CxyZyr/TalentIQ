@@ -43,6 +43,8 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { Pagination } from '../components/ui/pagination';
+import { TableSkeleton } from '../components/ui/skeleton';
+import { EmptyState } from '../components/ui/empty-state';
 import {
   getCandidateList,
   deleteCandidate,
@@ -58,6 +60,7 @@ import {
 } from '../api/candidate';
 import { useUserStore } from '../stores/userStore';
 import { useDepartments } from '../hooks/useDepartments';
+import { useToast } from '../components/ui/toast';
 
 const ALLOWED_RESUME_EXTENSIONS = new Set(['pdf', 'doc', 'docx']);
 
@@ -185,11 +188,7 @@ export function CandidateListPage() {
   const { departmentNames: DEPARTMENTS } = useDepartments();
 
   // Toast
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   // 轮询定时器
   const pollingTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -930,8 +929,8 @@ export function CandidateListPage() {
       <Card className="flex-1 flex flex-col min-h-0">
         <CardContent className="pt-4 pb-4 flex-1 flex flex-col min-h-0">
           {loading ? (
-            <div className="flex items-center justify-center py-12 flex-1">
-              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <TableSkeleton rows={8} cols={8} />
             </div>
           ) : (
             <>
@@ -969,8 +968,11 @@ export function CandidateListPage() {
                   <TableBody>
                     {data.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={16} className="text-center py-12 text-gray-500">
-                          暂无数据
+                        <TableCell colSpan={16} className="py-0">
+                          <EmptyState
+                            title="暂无候选人"
+                            description="调整筛选条件，或点击上方按钮上传简历新增候选人"
+                          />
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -1293,16 +1295,6 @@ export function CandidateListPage() {
       </Dialog>
 
       {/* Toast 通知 */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-600' :
-            toast.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

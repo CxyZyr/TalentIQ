@@ -33,6 +33,7 @@ import {
   Department,
 } from '../api/department';
 import { useUserStore } from '../stores/userStore';
+import { useToast } from '../components/ui/toast';
 
 interface TreeNode extends Department {
   children: TreeNode[];
@@ -90,12 +91,7 @@ export function DepartmentManagePage({ embedded = false }: { embedded?: boolean 
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   // 新增/编辑弹窗
   const [formOpen, setFormOpen] = useState(false);
@@ -243,16 +239,6 @@ export function DepartmentManagePage({ embedded = false }: { embedded?: boolean 
 
   return (
     <div className="flex flex-col gap-4 h-full min-h-0">
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-md text-sm text-white shadow-lg ${
-            toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
       {/* 标题 */}
       {!embedded && (
         <div className="flex items-center justify-between">

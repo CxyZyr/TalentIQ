@@ -19,6 +19,7 @@ import { SalaryNegotiationPage } from './pages/SalaryNegotiationPage';
 import SalaryNegotiationProcessPage from './pages/SalaryNegotiationProcessPage';
 import ProfilePage from './pages/ProfilePage';
 import { MainLayout } from './components/layout/MainLayout';
+import { ToastProvider } from './components/ui/toast';
 import { GlobalRecordingIndicator } from './components/ui/global-recording-indicator';
 import { useUserStore } from './stores/userStore';
 import {
@@ -75,6 +76,7 @@ function App() {
   };
 
   return (
+    <ToastProvider>
     <BrowserRouter>
       <GlobalRecordingIndicator />
       <Routes>
@@ -245,6 +247,7 @@ function App() {
         <Route path="*" element={<Navigate to="/statistics" replace />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   );
 }
 

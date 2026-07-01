@@ -16,6 +16,7 @@ import {
 import { DatePicker } from '../components/ui/date-picker';
 import { saveJD, publishJD, aiAssistWrite, JDData } from '../api/jd';
 import { useDepartments } from '../hooks/useDepartments';
+import { useToast } from '../components/ui/toast';
 
 // 岗位级别
 const JOB_LEVELS = ['专家', '高级', '中级', '初级'];
@@ -53,12 +54,7 @@ export function JDGeneratePage() {
   const { departmentNames: DEPARTMENTS } = useDepartments();
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
   const [aiLoading, setAiLoading] = useState<Record<AIFieldType, boolean>>({
     job_responsibilities: false,
     hard_requirements: false,
@@ -513,16 +509,6 @@ export function JDGeneratePage() {
       </Card>
 
       {/* Toast 通知 */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-600' :
-            toast.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

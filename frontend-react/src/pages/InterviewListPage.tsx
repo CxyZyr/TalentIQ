@@ -40,6 +40,7 @@ import {
   InterviewQuestion,
 } from '../api/interview';
 import { useDepartments } from '../hooks/useDepartments';
+import { useToast } from '../components/ui/toast';
 
 // 格式化日期时间
 const formatDateTime = (dateStr?: string) => {
@@ -52,12 +53,7 @@ export function InterviewListPage() {
   const { departmentNames: DEPARTMENT_OPTIONS } = useDepartments();
   const [loading, setLoading] = useState(false);
   const [todoList, setTodoList] = useState<TodoItem[]>([]);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
+  const { showToast } = useToast();
 
   // 筛选条件
   const [filters, setFilters] = useState({
@@ -784,16 +780,6 @@ export function InterviewListPage() {
       </Dialog>
 
       {/* Toast 通知 */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-3 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-600' :
-            toast.type === 'error' ? 'bg-red-600' : 'bg-yellow-600'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

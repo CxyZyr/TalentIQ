@@ -12,6 +12,7 @@ import {
 } from '../components/ui/dialog';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { getCurrentUserInfo, updateSelf, type User } from '../api/user';
+import { useToast } from '../components/ui/toast';
 
 const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -19,7 +20,7 @@ const ProfilePage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     real_name: '',
@@ -27,11 +28,6 @@ const ProfilePage = () => {
     phone: '',
     password: '',
   });
-
-  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
 
   const loadUserInfo = async () => {
     try {
@@ -102,16 +98,6 @@ const ProfilePage = () => {
   return (
     <div className="h-full flex flex-col">
       {/* Toast */}
-      {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-2">
-          <div className={`px-4 py-2 rounded-lg shadow-lg text-white text-sm ${
-            toast.type === 'success' ? 'bg-green-500' : toast.type === 'error' ? 'bg-red-500' : 'bg-yellow-500'
-          }`}>
-            {toast.message}
-          </div>
-        </div>
-      )}
-
       {/* 页面标题 */}
       <div className="mb-5">
         <h1 className="text-xl font-semibold text-gray-800">个人信息</h1>
