@@ -17,6 +17,7 @@ frontend/
 # ===== 环境变量 =====
 .env
 .env.*
+!.env.example
 frontend-react/.env
 
 # ===== 真实密钥配置（请复制对应 .example.py 填入自己的密钥）=====

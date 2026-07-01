@@ -5,6 +5,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+from dotenv import load_dotenv
+
+# 加载 .env 环境变量（密钥等敏感配置）
+load_dotenv()
+
 from routers.jd_router import router as jd_router
 from routers.auth_router import router as auth_router
 from routers.candidate_router import router as candidate_router

@@ -1,6 +1,7 @@
 """
 用户认证工具
 """
+import os
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -14,7 +15,7 @@ from db.database import get_db_context
 from db.models import User
 
 # JWT配置
-SECRET_KEY = "gcl_hr_saas_secret_key_2026"  # 生产环境应该使用环境变量
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "gcl_hr_saas_secret_key_2026")  # 优先环境变量，未配置时回退默认
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 3  # 3天
 
@@ -114,3 +115,21 @@ def get_current_user(
             department=user.department,
             job_title=user.job_title
         )
+
+
+def require_roles(*roles: str):
+    """
+    依赖工厂：要求当前用户角色属于 roles，否则返回 403。
+
+    用于在路由层保护管理类接口（如用户管理），避免仅靠前端隐藏按钮。
+    用法：current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
+    """
+    def checker(current_user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
+        if current_user.role not in roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="无权限执行此操作",
+            )
+        return current_user
+
+    return checker

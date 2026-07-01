@@ -74,6 +74,8 @@ async def get_recruitment_funnel(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -140,6 +142,8 @@ async def get_conversion_rates(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -172,6 +176,8 @@ async def get_my_todo_statistics(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -210,6 +216,8 @@ async def get_job_recruitment_progress(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -272,6 +280,8 @@ async def get_candidate_profile(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -299,6 +309,8 @@ async def get_resume_uploaders(
                 "message": "查询成功",
                 "data": data
             }
+    except HTTPException:
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

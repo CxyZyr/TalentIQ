@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from db.database import get_db_context
 from db.models import User, UserRole, DepartmentModel
-from utils.auth import get_current_user, get_password_hash, CurrentUser
+from utils.auth import get_current_user, get_password_hash, CurrentUser, require_roles
 
 router = APIRouter(prefix="/api/user", tags=["用户管理"])
 
@@ -74,7 +74,7 @@ async def get_user_list(
 @router.post("/create")
 async def create_user(
     req: UserCreateRequest,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """创建用户"""
     try:
@@ -117,7 +117,7 @@ async def create_user(
 async def update_user(
     user_id: int,
     req: UserUpdateRequest,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """编辑用户（角色、密码、备注）"""
     try:
@@ -160,7 +160,7 @@ async def update_user(
 @router.post("/toggle-status/{user_id}")
 async def toggle_user_status(
     user_id: int,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """切换用户启用/禁用状态"""
     try:
@@ -182,7 +182,7 @@ async def toggle_user_status(
 @router.post("/delete/{user_id}")
 async def delete_user(
     user_id: int,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """软删除用户"""
     try:
@@ -204,7 +204,7 @@ async def delete_user(
 @router.post("/batch-delete")
 async def batch_delete(
     req: BatchIdsRequest,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """批量软删除"""
     try:
@@ -222,7 +222,7 @@ async def batch_delete(
 @router.post("/batch-enable")
 async def batch_enable(
     req: BatchIdsRequest,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """批量启用"""
     try:
@@ -240,7 +240,7 @@ async def batch_enable(
 @router.post("/batch-disable")
 async def batch_disable(
     req: BatchIdsRequest,
-    current_user: CurrentUser = Depends(get_current_user)
+    current_user: CurrentUser = Depends(require_roles("HR", "CEO"))
 ):
     """批量禁用"""
     try:
