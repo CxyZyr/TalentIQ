@@ -1,0 +1,80 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# ===== Node / 前端 =====
+node_modules/
+frontend-react/build/
+frontend/build/
+# 旧版前端（已被 frontend-react 取代，含未脱敏的旧品牌，暂不发布）
+frontend/
+
+# ===== 环境变量 =====
+.env
+.env.*
+frontend-react/.env
+
+# ===== 真实密钥配置（请复制对应 .example.py 填入自己的密钥）=====
+config/llm_config.py
+config/email_config.py
+config/*_bk.py
+config/*_backup*.py
+
+# ===== 数据库（含真实候选人隐私数据，切勿上传）=====
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ===== 用户上传与导出（简历、面试录音、导出文档）=====
+uploads/
+exports/
+outputs/
+
+# ===== 日志 =====
+*.log
+
+# ===== 证书 / 部署包 =====
+*.zip
+*.pem
+*.key
+*.crt
+nginx/
+
+# ===== 备份文件 =====
+*_backup_*
+backend_backup_*
+*.bak
+
+# ===== 公司内部素材 / 真实数据（截图 / 销售手册 / PPT / 真实账号）=====
+招聘系统PPT图像/
+产品销售手册.md
+产品功能说明文档.md
+tools/
+get_deepseek_callback.py
+debug_*.py
+*.pptx
+*.ppt
+frontend-react/public/logo.png
+# init_users.py 含真实员工 PII，改用 init_users.example.py
+db/init_users.py
+
+# ===== AI 协作 / 运维脚本（含内部路径 / 域名 / 真实账号，不公开）=====
+AGENTS.md
+CLAUDE.md
+.claude/
+start.sh
+stop.sh
+setup_nginx.sh
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

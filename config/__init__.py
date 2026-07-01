@@ -1,0 +1,12 @@
+"""
+配置模块初始化
+"""
+from config.llm_config import JD_ASSISTANT_CONFIG, HARD_REQUIREMENTS_EXTRACTION_CONFIG
+from config.email_config import EMAIL_CONFIG, TODO_TIMEOUT_CONFIG
+
+__all__ = [
+    "JD_ASSISTANT_CONFIG",
+    "HARD_REQUIREMENTS_EXTRACTION_CONFIG",
+    "EMAIL_CONFIG",
+    "TODO_TIMEOUT_CONFIG",
+]
