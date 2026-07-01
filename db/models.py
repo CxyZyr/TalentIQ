@@ -23,6 +23,7 @@ class DepartmentModel(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), unique=True, nullable=False)  # 部门名称
+    parent_id = Column(Integer, ForeignKey("departments.id"), nullable=True)  # 上级部门ID（None=顶级）
     sort_order = Column(Integer, default=0)  # 排序序号
     is_active = Column(Boolean, default=True)  # 是否启用
     created_at = Column(DateTime, default=get_china_time)

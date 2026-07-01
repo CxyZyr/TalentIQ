@@ -64,6 +64,12 @@ def run_migration():
         else:
             print("[迁移] departments 表已存在，跳过创建")
 
+        # 1.5 确保 departments.parent_id 列存在（层级支持）
+        if not _column_exists(cursor, "departments", "parent_id"):
+            print("[迁移] 为 departments 表添加 parent_id 列...")
+            cursor.execute("ALTER TABLE departments ADD COLUMN parent_id INTEGER REFERENCES departments(id)")
+            conn.commit()
+
         # 2. 插入初始部门数据（跳过已存在的）
         for name, sort_order in INITIAL_DEPARTMENTS:
             cursor.execute("SELECT id FROM departments WHERE name = ?", (name,))

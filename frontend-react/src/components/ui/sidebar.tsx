@@ -20,6 +20,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
   User,
+  Network,
 } from "lucide-react";
 import { useUserStore } from "../../stores/userStore";
 
@@ -182,11 +183,17 @@ export const Sidebar = ({ onLogout, isCollapsed, onToggleCollapse }: SidebarProp
       name: "人才储备",
       icon: <Archive className="w-5 h-5" />,
     },
-    {
-      href: user?.role === 'HR' ? "/user-manage" : "/profile",
-      name: user?.role === 'HR' ? "用户管理" : "个人信息",
-      icon: user?.role === 'HR' ? <Settings className="w-5 h-5" /> : <User className="w-5 h-5" />,
-    },
+    (user?.role === 'HR' || user?.role === 'CEO')
+      ? {
+          href: "/system-manage",
+          name: "系统管理",
+          icon: <Settings className="w-5 h-5" />,
+        }
+      : {
+          href: "/profile",
+          name: "个人信息",
+          icon: <User className="w-5 h-5" />,
+        },
     {
       href: "/recruitment-log",
       name: "招聘日志",

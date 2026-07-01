@@ -45,9 +45,9 @@ import { useDepartments } from '../hooks/useDepartments';
 // 角色选项
 const ROLE_OPTIONS = ['HR', 'CEO', '面试官'];
 
-export function UserManagePage() {
+export function UserManagePage({ embedded = false }: { embedded?: boolean } = {}) {
   const { user: currentUser } = useUserStore();
-  const isHR = currentUser?.role === 'HR';
+  const isHR = currentUser?.role === 'HR' || currentUser?.role === 'CEO';
   const { departmentNames: DEPARTMENT_OPTIONS } = useDepartments();
 
   const [loading, setLoading] = useState(false);
@@ -385,9 +385,11 @@ export function UserManagePage() {
   return (
     <div className="h-full flex flex-col">
       {/* 页面标题 */}
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold text-slate-900">用户管理</h1>
-      </div>
+      {!embedded && (
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold text-slate-900">用户管理</h1>
+        </div>
+      )}
 
       {/* 筛选栏 */}
       <Card className="mb-4">

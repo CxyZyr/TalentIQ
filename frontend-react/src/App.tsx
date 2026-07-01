@@ -8,7 +8,7 @@ import { JDEditPage } from './pages/JDEditPage';
 import { CandidateListPage } from './pages/CandidateListPage';
 import CandidateDetailPage from './pages/CandidateDetailPage';
 import { RecruitmentLogPage } from './pages/RecruitmentLogPage';
-import { UserManagePage } from './pages/UserManagePage';
+import { SystemManagePage } from './pages/SystemManagePage';
 import { TalentPoolPage } from './pages/TalentPoolPage';
 import { ResumeScreeningPage } from './pages/ResumeScreeningPage';
 import ResumeScreeningDetailPage from './pages/ResumeScreeningDetailPage';
@@ -210,12 +210,12 @@ function App() {
           }
         />
 
-        {/* 用户管理 */}
+        {/* 系统管理（用户管理 + 部门管理） */}
         <Route
-          path="/user-manage"
+          path="/system-manage"
           element={
             <ProtectedLayout>
-              <UserManagePage />
+              <SystemManagePage />
             </ProtectedLayout>
           }
         />
