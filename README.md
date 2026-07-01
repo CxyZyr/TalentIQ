@@ -86,4 +86,4 @@ frontend-react/    React 前端
 
 ## 📄 License
 
-仅供学习与研究使用。
+本项目基于 [MIT License](LICENSE) 开源，可自由使用、修改与分发。
