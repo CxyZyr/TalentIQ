@@ -261,8 +261,9 @@ interface Props {
 
 export function CandidateProfilePanel({ data, loading }: Props) {
   const total = data?.total ?? 0;
-  const ts = data?.top_school;
-  const pct = (n?: number) => (total && n ? Math.round((n / total) * 100) : 0);
+  const isc = data?.interview_scores;
+  const fmtAvg = (s?: { avg: number | null; count: number }) =>
+    s && s.count > 0 && s.avg != null ? s.avg : "-";
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto flex-1 min-h-0 pr-1">
@@ -272,10 +273,10 @@ export function CandidateProfilePanel({ data, loading }: Props) {
           <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
             <Metric label="候选人总数" value={loading ? "-" : total} />
             <Metric label="已AI评分" value={loading ? "-" : data?.ai_score.scored_count ?? 0} />
-            <Metric label="平均得分率" value={loading ? "-" : `${data?.ai_score.avg_rate ?? 0}%`} />
-            <Metric label="985 占比" value={loading ? "-" : `${pct(ts?.is_985)}%`} sub={loading ? undefined : `${ts?.is_985 ?? 0} 人`} />
-            <Metric label="211 占比" value={loading ? "-" : `${pct(ts?.is_211)}%`} sub={loading ? undefined : `${ts?.is_211 ?? 0} 人`} />
-            <Metric label="双一流占比" value={loading ? "-" : `${pct(ts?.is_double_first_class)}%`} sub={loading ? undefined : `${ts?.is_double_first_class ?? 0} 人`} />
+            <Metric label="平均AI评分" value={loading ? "-" : data?.ai_score.avg_score ?? 0} />
+            <Metric label="一面平均分" value={loading ? "-" : fmtAvg(isc?.first)} sub={loading ? undefined : `${isc?.first.count ?? 0} 人`} />
+            <Metric label="二面平均分" value={loading ? "-" : fmtAvg(isc?.second)} sub={loading ? undefined : `${isc?.second.count ?? 0} 人`} />
+            <Metric label="三面平均分" value={loading ? "-" : fmtAvg(isc?.third)} sub={loading ? undefined : `${isc?.third.count ?? 0} 人`} />
           </div>
         </CardContent>
       </Card>
@@ -349,7 +350,7 @@ export function CandidateProfilePanel({ data, loading }: Props) {
           delay={0.45}
         />
         <BarCard
-          title="AI得分分布（得分率）"
+          title="AI得分分布"
           icon={<Sparkles className="w-4 h-4 text-blue-500" />}
           data={data?.ai_score.buckets ?? []}
           loading={loading}

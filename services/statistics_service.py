@@ -9,7 +9,7 @@ from db.models import (
     User, UserRole, Candidate, CandidateStageHistory,
     CandidateTodo, JobDescription,
     TodoStatus, OfferStatus, DepartmentModel,
-    ResumeEvaluationRule
+    ResumeEvaluationRule, InterviewEvaluation
 )
 from db.salary_negotiation_queries import get_latest_salary_negotiation_subquery
 from typing import Optional, Dict, List, Any
@@ -550,13 +550,13 @@ class StatisticsService:
                 "total": 0,
                 "ai_score": {
                     "scored_count": 0,
-                    "avg_rate": 0.0,
+                    "avg_score": 0.0,
                     "buckets": [
-                        {"range": "<60%", "count": 0},
-                        {"range": "60-70%", "count": 0},
-                        {"range": "70-80%", "count": 0},
-                        {"range": "80-90%", "count": 0},
-                        {"range": "≥90%", "count": 0},
+                        {"range": "<60", "count": 0},
+                        {"range": "60-70", "count": 0},
+                        {"range": "70-80", "count": 0},
+                        {"range": "80-90", "count": 0},
+                        {"range": "≥90", "count": 0},
                     ],
                 },
                 "education": [],
@@ -565,39 +565,39 @@ class StatisticsService:
                 "trend": [],
                 "job_ranking": [],
                 "stage_dist": [],
+                "interview_scores": {
+                    "first": {"avg": None, "count": 0},
+                    "second": {"avg": None, "count": 0},
+                    "third": {"avg": None, "count": 0},
+                },
                 "demographics": {"work_status": [], "work_years": [], "gender": [], "age": []},
             }
 
-        # 4. AI得分分布（按得分率分桶；未评分或0分不计入分母）
+        # 4. AI得分分布（按AI原始总分绝对分分桶；未评分或0分不计入）
         cand_id_list = [c.id for c in candidates]
-        score_max_map = StatisticsService._batch_candidate_score_max(db, cand_id_list)
-        bucket_labels = ["<60%", "60-70%", "70-80%", "80-90%", "≥90%"]
+        bucket_labels = ["<60", "60-70", "70-80", "80-90", "≥90"]
         bucket_counts = [0, 0, 0, 0, 0]
-        rate_sum = 0.0
+        score_sum = 0.0
         scored_count = 0
         for c in candidates:
             score = c.ai_score_total
             if score is None or score <= 0:
                 continue
-            smax = score_max_map.get(c.id) or 100
-            if smax <= 0:
-                continue
-            rate = score / smax * 100
             scored_count += 1
-            rate_sum += rate
-            if rate < 60:
+            score_sum += score
+            if score < 60:
                 bucket_counts[0] += 1
-            elif rate < 70:
+            elif score < 70:
                 bucket_counts[1] += 1
-            elif rate < 80:
+            elif score < 80:
                 bucket_counts[2] += 1
-            elif rate < 90:
+            elif score < 90:
                 bucket_counts[3] += 1
             else:
                 bucket_counts[4] += 1
         ai_score = {
             "scored_count": scored_count,
-            "avg_rate": round(rate_sum / scored_count, 1) if scored_count else 0.0,
+            "avg_score": round(score_sum / scored_count, 1) if scored_count else 0.0,
             "buckets": [{"range": bucket_labels[i], "count": bucket_counts[i]} for i in range(5)],
         }
 
@@ -729,6 +729,29 @@ class StatisticsService:
         # 追加枚举之外的在途阶段值（兜底）
         stage_dist += [{"name": k, "count": v} for k, v in stage_counter.items() if k not in stage_order]
 
+        # 12. 一面/二面/三面 人工面试平均分（仅统计有评价记录的候选人）
+        interview_scores = {
+            "first": {"avg": None, "count": 0},
+            "second": {"avg": None, "count": 0},
+            "third": {"avg": None, "count": 0},
+        }
+        stage_key = {"一面": "first", "二面": "second", "三面": "third"}
+        interview_rows = db.query(
+            InterviewEvaluation.stage,
+            func.avg(InterviewEvaluation.total_score),
+            func.count(func.distinct(InterviewEvaluation.candidate_id)),
+        ).filter(
+            InterviewEvaluation.candidate_id.in_(cand_id_list),
+            InterviewEvaluation.stage.in_(list(stage_key.keys())),
+        ).group_by(InterviewEvaluation.stage).all()
+        for stage_name, avg_score, cnt in interview_rows:
+            k = stage_key.get(stage_name)
+            if k:
+                interview_scores[k] = {
+                    "avg": round(avg_score, 1) if avg_score is not None else None,
+                    "count": cnt or 0,
+                }
+
         return {
             "total": total,
             "ai_score": ai_score,
@@ -738,6 +761,7 @@ class StatisticsService:
             "trend": trend,
             "job_ranking": job_ranking,
             "stage_dist": stage_dist,
+            "interview_scores": interview_scores,
             "demographics": {
                 "work_status": work_status,
                 "work_years": work_years,

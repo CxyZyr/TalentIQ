@@ -103,7 +103,7 @@ export interface CandidateProfile {
   total: number;
   ai_score: {
     scored_count: number;
-    avg_rate: number;
+    avg_score: number;
     buckets: RangeItem[];
   };
   education: DistributionItem[];
@@ -117,6 +117,11 @@ export interface CandidateProfile {
   trend: TrendItem[];
   job_ranking: DistributionItem[];
   stage_dist: DistributionItem[];
+  interview_scores: {
+    first: { avg: number | null; count: number };
+    second: { avg: number | null; count: number };
+    third: { avg: number | null; count: number };
+  };
   demographics: {
     work_status: DistributionItem[];
     work_years: RangeItem[];
