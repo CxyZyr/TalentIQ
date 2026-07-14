@@ -691,12 +691,32 @@ class StatisticsService:
         ]
         school_tier = [s for s in school_tier if s["count"] > 0]
 
-        # 9. 新增趋势（按简历上传月份）
-        month_counter = defaultdict(int)
-        for c in candidates:
-            if c.created_at:
-                month_counter[c.created_at.strftime("%Y-%m")] += 1
-        trend = [{"month": m, "count": month_counter[m]} for m in sorted(month_counter.keys())]
+        # 9. 新增趋势（最近最多12个月的滚动窗口，以当前月为终点，连续填充、空月补0）
+        #    独立统计：受权限与职位/部门/负责HR筛选，但不受时间范围限制，使其始终随当前日期向前滚动一年；
+        #    数据不足12个月时，从最早有数据的月份开始（如系统上线仅8个月则渲染8个点）。
+        trend_query = db.query(Candidate.created_at)
+        trend_query = StatisticsService._apply_filters(
+            db, trend_query, candidate_ids,
+            None, None, jd_id, department, jd_ids, departments, uploader_ids
+        )
+        trend_dates = [row[0] for row in trend_query.all() if row[0]]
+        now = datetime.now()
+        now_idx = now.year * 12 + (now.month - 1)
+        if trend_dates:
+            earliest = min(trend_dates)
+            earliest_idx = earliest.year * 12 + (earliest.month - 1)
+        else:
+            earliest_idx = now_idx
+        start_idx = max(earliest_idx, now_idx - 11)
+        trend_counter = defaultdict(int)
+        for dt in trend_dates:
+            idx = dt.year * 12 + (dt.month - 1)
+            if start_idx <= idx <= now_idx:
+                trend_counter[idx] += 1
+        trend = []
+        for idx in range(start_idx, now_idx + 1):
+            y, mm = divmod(idx, 12)
+            trend.append({"month": f"{y:04d}-{mm + 1:02d}", "count": trend_counter.get(idx, 0)})
 
         # 10. 职位候选人排行（Top 10）
         jd_counter = defaultdict(int)

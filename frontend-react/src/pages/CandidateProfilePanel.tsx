@@ -135,40 +135,6 @@ function PieCard({
   );
 }
 
-// 纵向柱状图卡（AI得分率/工作年限/年龄）
-function BarCard({
-  title,
-  icon,
-  data,
-  loading,
-  color,
-  delay,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  data: { range: string; count: number }[];
-  loading: boolean;
-  color: string;
-  delay?: number;
-}) {
-  const total = data.reduce((s, d) => s + d.count, 0);
-  return (
-    <CardBox title={title} icon={icon} delay={delay} loading={loading} isEmpty={total === 0}>
-      <ChartContainer config={{}} className={`h-full ${CHART_MIN_H} w-full`}>
-        <BarChart data={data} margin={{ top: 18, right: 12, left: -12, bottom: 2 }}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="range" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} />
-          <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={30} tick={{ fontSize: 11, fill: "#64748b" }} />
-          <Tooltip cursor={{ fill: "rgba(0,0,0,0.04)" }} formatter={(value: any) => [`${value} 人`, "人数"]} contentStyle={TOOLTIP_STYLE} />
-          <Bar dataKey="count" radius={[4, 4, 0, 0]} fill={color} barSize={40}>
-            <LabelList dataKey="count" position="top" style={{ fontSize: 11, fill: "#334155", fontWeight: 600 }} />
-          </Bar>
-        </BarChart>
-      </ChartContainer>
-    </CardBox>
-  );
-}
-
 // 折线图卡（新增趋势）
 function LineCard({
   title,
@@ -189,7 +155,7 @@ function LineCard({
       <ChartContainer config={{}} className={`h-full ${CHART_MIN_H} w-full`}>
         <LineChart data={data} margin={{ top: 18, right: 18, left: -12, bottom: 2 }}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} />
+          <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#64748b" }} tickFormatter={(m: any) => (typeof m === "string" && m.length >= 7 ? `${parseInt(m.slice(5), 10)}月` : m)} minTickGap={4} />
           <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={30} tick={{ fontSize: 11, fill: "#64748b" }} />
           <Tooltip formatter={(value: any) => [`${value} 人`, "新增"]} contentStyle={TOOLTIP_STYLE} />
           <Line type="monotone" dataKey="count" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, fill: "#6366f1" }} activeDot={{ r: 5 }}>
@@ -326,20 +292,18 @@ export function CandidateProfilePanel({ data, loading }: Props) {
           loading={loading}
           delay={0.3}
         />
-        <BarCard
+        <PieCard
           title="工作年限分布"
           icon={<CalendarClock className="w-4 h-4 text-orange-500" />}
-          data={data?.demographics.work_years ?? []}
+          data={(data?.demographics.work_years ?? []).filter((d) => d.count > 0).map((d) => ({ name: d.range, count: d.count }))}
           loading={loading}
-          color="#f59e0b"
           delay={0.35}
         />
-        <BarCard
+        <PieCard
           title="年龄分布"
           icon={<UserCircle2 className="w-4 h-4 text-rose-500" />}
-          data={data?.demographics.age ?? []}
+          data={(data?.demographics.age ?? []).filter((d) => d.count > 0).map((d) => ({ name: d.range, count: d.count }))}
           loading={loading}
-          color="#f43f5e"
           delay={0.4}
         />
         <PieCard
@@ -349,12 +313,11 @@ export function CandidateProfilePanel({ data, loading }: Props) {
           loading={loading}
           delay={0.45}
         />
-        <BarCard
+        <PieCard
           title="AI得分分布"
           icon={<Sparkles className="w-4 h-4 text-blue-500" />}
-          data={data?.ai_score.buckets ?? []}
+          data={(data?.ai_score.buckets ?? []).filter((d) => d.count > 0).map((d) => ({ name: d.range, count: d.count }))}
           loading={loading}
-          color="#3b82f6"
           delay={0.5}
         />
       </div>
